@@ -1,0 +1,32 @@
+---
+
+- name: APT | Install openvpn
+  apt:
+    pkg: "{{ pkgs }}" 
+    update_cache: yes
+    cache_valid_time: 3600
+  vars:
+    pkgs:
+      - openvpn
+      - easy-rsa
+      - openssl
+      - zip
+
+- name: Install PAM dependencies
+  apt:
+    name: "{{ dependencies }}"
+  when: openvpn_use_pam_users | length > 0
+  vars:
+    dependencies:
+      - libpam-pwdfile
+      - python-passlib
+
+- name: APT | Install LDAP dependencies
+  apt:
+    name: openvpn-auth-ldap
+  when: openvpn_use_ldap
+
+- name: APT | Install bridge dependencies
+  apt:
+    name: bridge-utils
+  when: openvpn_bridge

@@ -1,0 +1,38 @@
+---
+
+- name: SET_FACT | Bypass https://github.com/ansible/ansible/issues/19874
+  set_fact:
+    ansible_distribution_release: 'buster'
+  when: ansible_distribution_release == "buster/sid"
+
+- name: Include OS-specific variables.
+  include_vars:
+    file: "{{ lookup('first_found', params) }}"
+  vars:
+    params:
+      files:
+        - "{{ ansible_distribution }}.{{ ansible_distribution_release }}.yml"
+        - "{{ ansible_distribution }}.yml"
+        - "{{ ansible_os_family }}.yml"
+        - "Common-default.yml"
+      paths:
+        - 'vars'
+
+- name: IMPORT_TASKS | Install
+  import_tasks: install.yml
+
+- name: IMPORT_TASKS | EasyRSA
+  import_tasks: easyrsa.yml
+
+- name: IMPORT_TASKS | Configuration
+  import_tasks: config.yml
+
+- import_tasks: read-client-files.yml
+
+- import_tasks: clients.yml
+
+- name: Ensure OpenVPN is started
+  service:
+    name: "{{ openvpn_service }}"
+    state: started
+    enabled: true

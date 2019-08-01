@@ -1,0 +1,13 @@
+---
+
+- hosts: all
+  vars:
+    openvpn_clients: ['plop1', 'plop2']
+    openvpn_clients_revoke: ['plop3']
+    openvpn_unified_client_profiles: false
+  roles:
+    - ../../
+  post_tasks:
+    - name: APT | Install debug packages
+      apt:
+        pkg: ['htop', 'strace', 'vim']

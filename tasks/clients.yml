@@ -1,0 +1,44 @@
+---
+
+- name: Generate Clients configurations
+  template:
+    src: client.conf.j2
+    dest: "{{ openvpn_datadir }}/{{ item }}.ovpn"
+  loop: "{{ openvpn_clients }}"
+  register: openvpn_clients_changed
+
+- name: COMMAND | Pack clients configuration 
+  command: >-
+    tar cfz {{ item.item }}.tar.gz --transform='s%.*/%%' 
+    {{ openvpn_pki_dir }}/issued/{{ item.item }}.crt
+    {{ openvpn_pki_dir }}/private/{{ item.item }}.key
+    {{ item.item }}.ovpn
+    {{ openvpn_pki_dir }}/ca.crt
+    {{ openvpn_tls_key }}
+  args:
+    chdir: "{{ openvpn_datadir }}"
+    creates: "{{ item.item }}.tar.gz"
+    warn: false
+  loop: "{{ openvpn_clients_changed.results }}"
+
+- name: FETCH | Download client credentials
+  fetch:
+    src: "{{ openvpn_datadir }}/{{ item.item }}.tar.gz"
+    dest: "{{ openvpn_download_dir }}"
+    flat: true
+    validate_checksum: true
+  when:
+    - openvpn_download_clients | bool
+    - not openvpn_unified_client_profiles | bool
+  loop: "{{ openvpn_clients_changed.results }}"
+
+- name: FETCH | Download client credentials (ovpn)
+  fetch:
+    src: "{{ openvpn_datadir }}/{{ item.item }}.ovpn"
+    dest: "{{ openvpn_download_dir }}"
+    flat: true
+    validate_checksum: true
+  when:
+    - openvpn_download_clients | bool
+    - openvpn_unified_client_profiles | bool
+  loop: "{{ openvpn_clients_changed.results }}"

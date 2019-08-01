@@ -1,0 +1,74 @@
+---
+
+openvpn_etcdir: /etc/openvpn
+openvpn_datadir: "{{ openvpn_etcdir }}/data"
+openvpn_pki_dir: "{{ openvpn_etcdir }}/pki"
+
+openvpn_configure_forwarding: true
+
+# Default settings (See OpenVPN documentation)
+openvpn_host: "{{ inventory_hostname }}"
+
+openvpn_port: 1194
+openvpn_proto: udp
+openvpn_dev: tun
+openvpn_server: 10.8.0.0 255.255.255.0
+openvpn_bridge: {}
+openvpn_max_clients: 100
+openvpn_log: /var/log/openvpn.log
+openvpn_keepalive: "10 120"
+openvpn_ifconfig_pool_persist: ipp.txt
+openvpn_comp_lzo: true
+openvpn_cipher: BF-CBC
+openvpn_status: openvpn-status.log
+openvpn_verb: 3
+openvpn_tls_key: "{{ openvpn_pki_dir }}/ta.key"
+openvpn_user: nobody
+openvpn_group: nogroup
+openvpn_resolv_retry: infinite
+openvpn_client_to_client: true
+
+# Network ranges that the connecting clients should try to reach using the VPN
+# connection. Example:
+# openvpn_route_ranges:
+#   - 192.168.0.0 255.255.255.0
+#   - 192.168.10.0 255.255.255.0
+openvpn_route_ranges: []
+
+# DNS servers to push to the connecting client to avoid leaks via DNS queries
+openvpn_dns_servers: []
+
+openvpn_client_options: []
+openvpn_server_options: []
+# Additional server options
+# openvpn_server_options:
+# - dev-node MyTap
+# - client-to-client
+
+openvpn_key_country: US
+openvpn_key_province: CA
+openvpn_key_city: SanFrancisco
+openvpn_key_org: Fort-Funston
+openvpn_key_email: me@myhost.mydomain
+openvpn_key_size: 2048
+
+#
+# User management
+#
+openvpn_unified_client_profiles: false
+openvpn_clients: []
+openvpn_clients_revoke: []
+openvpn_use_pam: true
+openvpn_use_pam_users: []
+
+openvpn_use_ldap: false
+openvpn_ldap_tlsenable: 'false'
+openvpn_ldap_follow_referrals: 'false'
+
+# Use simple authentication (default is disabled)
+openvpn_simple_auth: false
+openvpn_simple_auth_password: ""
+
+# Download the created client credentials to the specified directory
+openvpn_download_clients: false
+openvpn_download_dir: "{{ playbook_dir }}/client_credentials/"

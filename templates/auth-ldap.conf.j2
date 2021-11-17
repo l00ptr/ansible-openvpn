@@ -23,7 +23,7 @@
 
   # TLS CA Certificate Directory
   TLSCACertDir  /etc/ssl/certs
-
+{% if openvpn_ldap_cert_client_auth|default(false) %}
   # Client Certificate and key
   # If TLS client authentication is required
   TLSCertFile /etc/ssl/client-cert.pem
@@ -32,6 +32,7 @@
   # Cipher Suite
   # The defaults are usually fine here
   # TLSCipherSuite  ALL:!ADH:@STRENGTH
+{% endif %}
 </LDAP>
 
 <Authorization>
@@ -41,7 +42,7 @@
   SearchFilter  {{ openvpn_ldap_search_filter }}
   RequireGroup  true
   <Group>
-    BaseDN    {{ openvpn_ldap_base_dn }}
+    BaseDN    {{ openvpn_ldap_group_base_dn }}
     # e.g. "cn=OpenVPNUsers"
     SearchFilter  {{ openvpn_ldap_group_search_filter }}
     MemberAttribute Member

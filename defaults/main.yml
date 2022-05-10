@@ -27,7 +27,7 @@ openvpn_user: nobody
 openvpn_group: nogroup
 openvpn_resolv_retry: infinite
 openvpn_client_to_client: true
-
+openvpn_duplicate_cn: false
 # Network ranges that the connecting clients should try to reach using the VPN
 # connection. Example:
 # openvpn_route_ranges:
